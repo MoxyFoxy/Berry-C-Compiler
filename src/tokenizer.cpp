@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <regex>
+#include <ctype.h>
 
 #include "tokens.h"
 #include "tokenclasses.h"
@@ -15,8 +17,7 @@ std::vector<Token*> tokenize(std::istream& input) {
 	char c = 'a';
 
 	while (!input.eof()) {
-		input >> c;
-		std::cout << c;
+		c = input.get();
 		bool switchSuccess = false;
 
 		if (!inString) {
@@ -134,221 +135,273 @@ std::vector<Token*> tokenize(std::istream& input) {
 			}
 		}
 
-		if (!switchSuccess) {
+		if (!switchSuccess && (isalnum(c) || c == '!')) {
 			tempToken += c;
 
 			// Types
 
-			if (tempToken.compare("string") == 0) {
-				tokens.push_back(new KeywordToken(T_STRING));
-			}
+			if (!isalnum(input.peek()) && input.peek() != '!') {
+				if (tempToken.compare("string") == 0) {
+					tokens.push_back(new KeywordToken(T_STRING));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("char") == 0) {
-				tokens.push_back(new KeywordToken(T_CHAR));
-			}
+				else if (tempToken.compare("char") == 0) {
+					tokens.push_back(new KeywordToken(T_CHAR));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("byte") == 0) {
-				tokens.push_back(new KeywordToken(T_BYTE));
-			}
+				else if (tempToken.compare("byte") == 0) {
+					tokens.push_back(new KeywordToken(T_BYTE));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("bool") == 0) {
-				tokens.push_back(new KeywordToken(T_BOOL));
-			}
+				else if (tempToken.compare("bool") == 0) {
+					tokens.push_back(new KeywordToken(T_BOOL));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("null") == 0) {
-				tokens.push_back(new KeywordToken(T_NULL));
-			}
+				else if (tempToken.compare("null") == 0) {
+					tokens.push_back(new KeywordToken(T_NULL));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("int") == 0) {
-				tokens.push_back(new KeywordToken(T_INT));
-			}
+				else if (tempToken.compare("int") == 0) {
+					tokens.push_back(new KeywordToken(T_INT));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("int8") == 0) {
-				tokens.push_back(new KeywordToken(T_INT8));
-			}
+				else if (tempToken.compare("int8") == 0) {
+					tokens.push_back(new KeywordToken(T_INT8));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("int16") == 0) {
-				tokens.push_back(new KeywordToken(T_INT16));
-			}
+				else if (tempToken.compare("int16") == 0) {
+					tokens.push_back(new KeywordToken(T_INT16));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("int64") == 0) {
-				tokens.push_back(new KeywordToken(T_INT64));
-			}
+				else if (tempToken.compare("int64") == 0) {
+					tokens.push_back(new KeywordToken(T_INT64));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("unsigned") == 0) {
-				tokens.push_back(new KeywordToken(T_UNSIGNED));
-			}
+				else if (tempToken.compare("unsigned") == 0) {
+					tokens.push_back(new KeywordToken(T_UNSIGNED));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("float") == 0) {
-				tokens.push_back(new KeywordToken(T_FLOAT));
-			}
+				else if (tempToken.compare("float") == 0) {
+					tokens.push_back(new KeywordToken(T_FLOAT));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("var") == 0) {
-				tokens.push_back(new KeywordToken(T_VAR));
-			}
+				else if (tempToken.compare("var") == 0) {
+					tokens.push_back(new KeywordToken(T_VAR));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("class") == 0) {
-				tokens.push_back(new KeywordToken(CLASS));
-			}
+				else if (tempToken.compare("class") == 0) {
+					tokens.push_back(new KeywordToken(CLASS));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("func") == 0) {
-				tokens.push_back(new KeywordToken(T_FUNC));
-			}
+				else if (tempToken.compare("func") == 0) {
+					tokens.push_back(new KeywordToken(T_FUNC));
+					tempToken = "";
+				}
 
-			// Bytes
+				// Bytes
 
-			else if (tempToken.compare("inv") == 0) {
-				tokens.push_back(new KeywordToken(INV));
-			}
+				else if (tempToken.compare("inv") == 0) {
+					tokens.push_back(new KeywordToken(INV));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("com") == 0) {
-				tokens.push_back(new KeywordToken(COM));
-			}
+				else if (tempToken.compare("com") == 0) {
+					tokens.push_back(new KeywordToken(COM));
+					tempToken = "";
+				}
 
-			// Additives
+				// Additives
 
-			else if (tempToken.compare("static") == 0) {
-				tokens.push_back(new KeywordToken(STATIC));
-			}
+				else if (tempToken.compare("static") == 0) {
+					tokens.push_back(new KeywordToken(STATIC));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("ref") == 0) {
-				tokens.push_back(new KeywordToken(REF));
-			}
+				else if (tempToken.compare("ref") == 0) {
+					tokens.push_back(new KeywordToken(REF));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("deref") == 0) {
-				tokens.push_back(new KeywordToken(DEREF));
-			}
+				else if (tempToken.compare("deref") == 0) {
+					tokens.push_back(new KeywordToken(DEREF));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("new") == 0) {
-				tokens.push_back(new KeywordToken(NEW));
-			}
+				else if (tempToken.compare("new") == 0) {
+					tokens.push_back(new KeywordToken(NEW));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("delete") == 0) {
-				tokens.push_back(new KeywordToken(DELETE));
-			}
+				else if (tempToken.compare("delete") == 0) {
+					tokens.push_back(new KeywordToken(DELETE));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("final") == 0) {
-				tokens.push_back(new KeywordToken(FINAL));
-			}
+				else if (tempToken.compare("final") == 0) {
+					tokens.push_back(new KeywordToken(FINAL));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("global") == 0) {
-				tokens.push_back(new KeywordToken(GLOBAL));
-			}
+				else if (tempToken.compare("global") == 0) {
+					tokens.push_back(new KeywordToken(GLOBAL));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("def") == 0) {
-				tokens.push_back(new KeywordToken(DEF));
-			}
+				else if (tempToken.compare("def") == 0) {
+					tokens.push_back(new KeywordToken(DEF));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("get") == 0) {
-				tokens.push_back(new KeywordToken(GET));
-			}
+				else if (tempToken.compare("get") == 0) {
+					tokens.push_back(new KeywordToken(GET));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("set") == 0) {
-				tokens.push_back(new KeywordToken(SET));
-			}
+				else if (tempToken.compare("set") == 0) {
+					tokens.push_back(new KeywordToken(SET));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("extends") == 0) {
-				tokens.push_back(new KeywordToken(EXTENDS));
-			}
+				else if (tempToken.compare("extends") == 0) {
+					tokens.push_back(new KeywordToken(EXTENDS));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("self") == 0) {
-				tokens.push_back(new KeywordToken(SELF));
-			}
+				else if (tempToken.compare("self") == 0) {
+					tokens.push_back(new KeywordToken(SELF));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("super") == 0) {
-				tokens.push_back(new KeywordToken(SUPER));
-			}
+				else if (tempToken.compare("super") == 0) {
+					tokens.push_back(new KeywordToken(SUPER));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("abstract") == 0) {
-				tokens.push_back(new KeywordToken(ABSTRACT));
-			}
+				else if (tempToken.compare("abstract") == 0) {
+					tokens.push_back(new KeywordToken(ABSTRACT));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("interface") == 0) {
-				tokens.push_back(new KeywordToken(INTERFACE));
-			}
+				else if (tempToken.compare("interface") == 0) {
+					tokens.push_back(new KeywordToken(INTERFACE));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("implements") == 0) {
-				tokens.push_back(new KeywordToken(IMPLEMENTS));
-			}
+				else if (tempToken.compare("implements") == 0) {
+					tokens.push_back(new KeywordToken(IMPLEMENTS));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("return") == 0) {
-				tokens.push_back(new KeywordToken(RETURN));
-			}
+				else if (tempToken.compare("return") == 0) {
+					tokens.push_back(new KeywordToken(RETURN));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("halt") == 0) {
-				tokens.push_back(new KeywordToken(HALT));
-			}
+				else if (tempToken.compare("halt") == 0) {
+					tokens.push_back(new KeywordToken(HALT));
+					tempToken = "";
+				}
 
-			// Conditionals
+				// Conditionals
 
-			else if (tempToken.compare("if") == 0) {
-				tokens.push_back(new KeywordToken(IF));
-			}
+				else if (tempToken.compare("if") == 0) {
+					tokens.push_back(new KeywordToken(IF));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("else") == 0) {
-				tokens.push_back(new KeywordToken(ELSE));
-			}
+				else if (tempToken.compare("else") == 0) {
+					tokens.push_back(new KeywordToken(ELSE));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("elif") == 0) {
-				tokens.push_back(new KeywordToken(ELIF));
-			}
+				else if (tempToken.compare("elif") == 0) {
+					tokens.push_back(new KeywordToken(ELIF));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("and") == 0) {
-				tokens.push_back(new KeywordToken(AND));
-			}
+				else if (tempToken.compare("and") == 0) {
+					tokens.push_back(new KeywordToken(AND));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("or") == 0) {
-				tokens.push_back(new KeywordToken(OR));
-			}
+				else if (tempToken.compare("or") == 0) {
+					tokens.push_back(new KeywordToken(OR));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("xor") == 0) {
-				tokens.push_back(new KeywordToken(XOR));
-			}
+				else if (tempToken.compare("xor") == 0) {
+					tokens.push_back(new KeywordToken(XOR));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("is") == 0) {
-				tokens.push_back(new KeywordToken(IS));
-			}
+				else if (tempToken.compare("is") == 0) {
+					tokens.push_back(new KeywordToken(IS));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("in") == 0) {
-				tokens.push_back(new KeywordToken(IN));
-			}
+				else if (tempToken.compare("in") == 0) {
+					tokens.push_back(new KeywordToken(IN));
+					tempToken = "";
+				}
 
-			// Loops
+				// Loops
 
-			else if (tempToken.compare("for") == 0) {
-				tokens.push_back(new KeywordToken(FOR));
-			}
+				else if (tempToken.compare("for") == 0) {
+					tokens.push_back(new KeywordToken(FOR));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("while") == 0) {
-				tokens.push_back(new KeywordToken(WHILE));
-			}
+				else if (tempToken.compare("while") == 0) {
+					tokens.push_back(new KeywordToken(WHILE));
+					tempToken = "";
+				}
 
-			// Errors
+				// Errors
 
-			else if (tempToken.compare("error") == 0) {
-				tokens.push_back(new KeywordToken(ERROR));
-			}
+				else if (tempToken.compare("error") == 0) {
+					tokens.push_back(new KeywordToken(ERROR));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("raise") == 0) {
-				tokens.push_back(new KeywordToken(RAISE));
-			}
+				else if (tempToken.compare("raise") == 0) {
+					tokens.push_back(new KeywordToken(RAISE));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("try") == 0) {
-				tokens.push_back(new KeywordToken(TRY));
-			}
+				else if (tempToken.compare("try") == 0) {
+					tokens.push_back(new KeywordToken(TRY));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("except") == 0) {
-				tokens.push_back(new KeywordToken(EXCEPT));
-			}
+				else if (tempToken.compare("except") == 0) {
+					tokens.push_back(new KeywordToken(EXCEPT));
+					tempToken = "";
+				}
 
-			// Miscellaneous
+				// Miscellaneous
 
-			else if (tempToken.compare("import") == 0) {
-				tokens.push_back(new KeywordToken(IMPORT));
-			}
+				else if (tempToken.compare("import") == 0) {
+					tokens.push_back(new KeywordToken(IMPORT));
+					tempToken = "";
+				}
 
-			else if (tempToken.compare("as") == 0) {
-				tokens.push_back(new KeywordToken(AS));
+				else if (tempToken.compare("as") == 0) {
+					tokens.push_back(new KeywordToken(AS));
+					tempToken = "";
+				}
 			}
 		}
 
@@ -366,30 +419,38 @@ std::vector<Token*> tokenize(std::istream& input) {
 }
 
 int main(int argc, char **argv) {
-	std::string test =  "class Foo extends Bar {	\
-							string foo;				 \
-							unsigned int8 zoo;		  \
-							int64 boo;				   \
-														\
-							set zoo(int8 newval) {		 \
-								self.zoo += zoo;		  \
-								self.zoo++;				   \
-							}								\
-						}";
+	std::string test =  "class Foo extends Bar {	\\\
+							string foo;				 \\\
+							unsigned int8 zoo;		  \\\
+							int64 boo;				   \\\
+														\\\
+							set zoo(int8 newval) {		 \\\
+								self.zoo += zoo;		  \\\
+								self.zoo++;				   \\\
+							}								\\\
+						}";									//\\
+														   ///\\\
+														  ///  \\\
+														 ///	\\\			THE POWER OF LAMBDA (unrelated to the actual code)
+														///		 \\\			ABSOLUTE UNIT (test)
+													   ///		  \\\
+													  ///		   \\\
+													 ///			\\\
+													///				 \\\
+												   ///				  \\\
 
 	std::stringstream s;
 	s << test;
-	std::cout << '\n';
 
 	std::vector<Token*> tokens = tokenize(s);
 
 	for (int i = 0; i < tokens.size(); i++) {
-		Token *token = tokens.at(i); ///// its a pointer dangit, you cant complain!!!!!!
+		Token *token = tokens.at(i);
 		std::cout << token->ts();
 	}
 
 	for (int i = 0; i < tokens.size(); i++) {
-		delete tokens.at(i); ///// its a pointer dangit, you cant complain!!!!!!
+		delete tokens.at(i);
 	}
 
 	tokens.clear();

@@ -1,0 +1,1 @@
+g++ -static -g -o bin\tokenizer.exe src\*.cpp
