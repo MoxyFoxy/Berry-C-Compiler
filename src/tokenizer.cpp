@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
-#include <regex>
 #include <ctype.h>
 
 #include "tokens.h"
